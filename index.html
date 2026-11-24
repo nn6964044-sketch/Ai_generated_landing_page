@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Image Generator</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    body {
+      background: linear-gradient(135deg, #0f172a, #1e1b4b);
+      color: #ffffff;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+    .container {
+      background: rgba(255, 255, 255, 0.08);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 20px;
+      padding: 30px 24px;
+      width: 100%;
+      max-width: 500px;
+      text-align: center;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+    }
+    h1 {
+      font-size: 1.8rem;
+      margin-bottom: 10px;
+      background: linear-gradient(90deg, #38bdf8, #a855f7);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    p {
+      color: #cbd5e1;
+      font-size: 0.95rem;
+      margin-bottom: 22px;
+    }
+    .input-group {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    input {
+      width: 100%;
+      padding: 14px 16px;
+      border-radius: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      background: rgba(15, 23, 42, 0.7);
+      color: #fff;
+      font-size: 1rem;
+      outline: none;
+    }
+    input:focus {
+      border-color: #38bdf8;
+    }
+    button {
+      padding: 14px;
+      border: none;
+      border-radius: 12px;
+      background: linear-gradient(90deg, #38bdf8, #818cf8);
+      color: #0f172a;
+      font-size: 1rem;
+      font-weight: bold;
+      cursor: pointer;
+      transition: transform 0.2s, opacity 0.2s;
+    }
+    button:hover {
+      opacity: 0.92;
+      transform: translateY(-1px);
+    }
+    button:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+    .result-box {
+      margin-top: 24px;
+      min-height: 260px;
+      border-radius: 14px;
+      background: rgba(15, 23, 42, 0.5);
+      border: 1px dashed rgba(255, 255, 255, 0.2);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      overflow: hidden;
+      padding: 12px;
+    }
+    .result-box img {
+      width: 100%;
+      border-radius: 10px;
+      display: none;
+    }
+    .status {
+      color: #94a3b8;
+      font-size: 0.9rem;
+    }
+    .download-btn {
+      display: none;
+      margin-top: 12px;
+      text-decoration: none;
+      background: #22c55e;
+      color: #052e16;
+      padding: 10px 18px;
+      border-radius: 10px;
+      font-weight: bold;
+      font-size: 0.9rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>AI Image Generator</h1>
+    <p>तपाईंले सोचेको दृश्य अंग्रेजीमा लेख्नुहोस्, AI ले तुरुन्तै फोटो बनाइदिन्छ।</p>
+    
+    <div class="input-group">
+      <input type="text" id="promptInput" placeholder="उदाहरण: A futuristic city in Nepal mountains, sunset..." />
+      <button id="generateBtn" onclick="generateImage()">Generate Image</button>
+    </div>
+
+    <div class="result-box">
+      <span class="status" id="statusText">तपाईंको AI फोटो यहाँ देखिनेछ</span>
+      <img id="aiImage" alt="Generated AI Image" />
+      <a id="downloadLink" class="download-btn" download="ai-image.jpg" target="_blank">Download Image</a>
+    </div>
+  </div>
+
+  <script>
+    function generateImage() {
+      const prompt = document.getElementById('promptInput').value.trim();
+      const btn = document.getElementById('generateBtn');
+      const statusText = document.getElementById('statusText');
+      const aiImage = document.getElementById('aiImage');
+      const downloadLink = document.getElementById('downloadLink');
+
+      if (!prompt) {
+        alert("कृपया पहिले फोटोको विवरण (prompt) लेख्नुहोस्!");
+        return;
+      }
+
+      btn.disabled = true;
+      btn.innerText = "बन्दैछ (Generating)...";
+      statusText.style.display = "block";
+      statusText.innerText = "AI ले फोटो बनाउँदैछ, केही सेकेन्ड पर्खनुहोस्...";
+      aiImage.style.display = "none";
+      downloadLink.style.display = "none";
+
+      const seed = Math.floor(Math.random() * 1000000);
+      const imageUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt)}?width=768&height=768&seed=${seed}&nologo=true`;
+
+      aiImage.onload = function() {
+        statusText.style.display = "none";
+        aiImage.style.display = "block";
+        downloadLink.href = imageUrl;
+        downloadLink.style.display = "inline-block";
+        btn.disabled = false;
+        btn.innerText = "Generate Image";
+      };
+
+      aiImage.onerror = function() {
+        statusText.innerText = "फोटो लोड हुन सकेन, कृपया फेरि प्रयास गर्नुहोस्।";
+        btn.disabled = false;
+        btn.innerText = "Generate Image";
+      };
+
+      aiImage.src = imageUrl;
+    }
+  </script>
+</body>
+</html>
